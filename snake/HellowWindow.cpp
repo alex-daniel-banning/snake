@@ -3,8 +3,14 @@
 
 #include <iostream>
 
+#include "Shader.h"
+#include "Game.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 800;
 
 int main()
 {
@@ -14,7 +20,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -29,15 +35,26 @@ int main()
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glEnable(GL_DEPTH_TEST);
+
+
+	Shader shader("C:\\Users\\banni\\source\\repos\\snake\\snake\\resources\\shaders\\basic.vs",
+		"C:\\Users\\banni\\source\\repos\\snake\\snake\\resources\\shaders\\basic.fs");
+    shader.use();
+    shader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
+    Game game;
+    game.initialize();
 
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        game.render(shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
